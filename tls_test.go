@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"time"
 
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
@@ -145,4 +146,25 @@ func (TLSSuite) TestDisableKeepAlives(c *gc.C) {
 		DisableKeepAlives: true,
 	})
 	c.Assert(transport.DisableKeepAlives, gc.Equals, true)
+}
+
+func (TLSSuite) TestIdleConnections(c *gc.C) {
+	transport := DefaultHTTPTransport()
+	c.Check(transport.MaxIdleConns, gc.Equals, 0)
+	c.Check(transport.MaxIdleConnsPerHost, gc.Equals, 0)
+	c.Check(transport.MaxConnsPerHost, gc.Equals, 0)
+	c.Check(transport.IdleConnTimeout, gc.Equals, time.Duration(0))
+	transport.CloseIdleConnections()
+
+	transport = NewHTTPTLSTransport(TransportConfig{
+		MaxIdleConns:        10,
+		MaxIdleConnsPerHost: 2,
+		MaxConnsPerHost:     5,
+		IdleConnTimeout:     10 * time.Second,
+	})
+	c.Check(transport.MaxIdleConns, gc.Equals, 10)
+	c.Check(transport.MaxIdleConnsPerHost, gc.Equals, 2)
+	c.Check(transport.MaxConnsPerHost, gc.Equals, 5)
+	c.Check(transport.IdleConnTimeout, gc.Equals, 10*time.Second)
+	transport.CloseIdleConnections()
 }

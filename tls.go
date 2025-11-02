@@ -19,6 +19,10 @@ type TransportConfig struct {
 	DisableKeepAlives   bool
 	TLSHandshakeTimeout time.Duration
 	Middlewares         []TransportMiddleware
+	MaxIdleConns        int
+	MaxIdleConnsPerHost int
+	MaxConnsPerHost     int
+	IdleConnTimeout     time.Duration
 }
 
 // NewHTTPTLSTransport returns a new http.Transport constructed with the TLS config
@@ -28,6 +32,10 @@ func NewHTTPTLSTransport(config TransportConfig) *http.Transport {
 		TLSClientConfig:     config.TLSConfig,
 		DisableKeepAlives:   config.DisableKeepAlives,
 		TLSHandshakeTimeout: config.TLSHandshakeTimeout,
+		MaxIdleConns:        config.MaxIdleConns,
+		MaxIdleConnsPerHost: config.MaxIdleConnsPerHost,
+		MaxConnsPerHost:     config.MaxConnsPerHost,
+		IdleConnTimeout:     config.IdleConnTimeout,
 	}
 	for _, middlewareFn := range config.Middlewares {
 		transport = middlewareFn(transport)
