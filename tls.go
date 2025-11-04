@@ -28,8 +28,9 @@ func NewHTTPTLSTransport(config TransportConfig) *http.Transport {
 		TLSClientConfig:     config.TLSConfig,
 		DisableKeepAlives:   config.DisableKeepAlives,
 		TLSHandshakeTimeout: config.TLSHandshakeTimeout,
-		// These are taken from DefaultTransport
-		// Setting them to 0 means that no idle connections will ever timeout
+		// The following values are taken from Go standard library net/http.DefaultTransport
+		// (see https://pkg.go.dev/net/http#DefaultTransport), as of Go 1.20.
+		// Setting them to 0 means that no idle connections will ever timeout.
 		MaxIdleConns:          100,
 		IdleConnTimeout:       90 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
